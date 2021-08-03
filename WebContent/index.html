@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<!-- 
+	Functionality left out:
+		Edit
+		Delete
+		Search returning no results modal
+		Check Boxes Functionality
+		Servelet + JS implementation for EDIT/Delete
+ -->
+<html id="mainpage">
+	<head>
+		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Ubuntu:regular,bold&subset=Latin">
+		<script src="https://kit.fontawesome.com/5bf799e03b.js" crossorigin="anonymous"></script>
+		<link rel="stylesheet" type="text/css" href="./css/test.css">
+		<meta charset="ISO-8859-1">
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+		<title>
+			HighRadius
+		</title>	
+	</head>
+	<body class="body">
+		<div id='top'>
+				<img class='leftim' src = './images/leftlogo.svg'>
+				<img class='center' src = './images/logo.svg'>
+		</div>
+		<div id='bottom'>
+			<div id="ilist">
+				Invoice List
+			</div>
+			<div id='padding1'></div>
+			<div id = "elements_holder">
+				<div id="above-content-bar">
+					<button type="button" class="search" onclick="search()"><img class ="ico" src = "./images/search.svg" /></button>
+					<input type="text" class="search_box" placeholder="Search By Invoice Number" />
+			    	<button class="btn" id="delete"><i class="fas fa-minus"></i>  Delete</button>
+					<button class="btn" id ="edit"><img class ="ico" src = "./images/edit.svg" />  Edit</button>
+					<button class="btn" id="add"><img class ="ico" src = "./images/add.svg" />  Add</button>
+				</div>
+				<div id = "content">
+					<table id = "maintable">
+					</table>
+				</div>
+			</div>
+		</div>
+		<button type = "button" onclick="previous()" id="page-prev"><img class = "filter-white" src = "./images/chevron-left.svg"  height="35px" width="35px"/></button>
+		<button type = "button" onclick="next()" id="page-next"><img class = "filter-white" src = "./images/chevron-right.svg"  height="35px" width="35px"/></button>
+		<div id="modal1" class = "modal">
+			<form name ="addform" id="addform" action="/H2HBABBA2705/AddServelet" method="post">
+			<div class = "modal-content">
+				<div class = "modal-content-top">
+					Add Invoice<span class="close"><i class = "fas fa-times"></i></span>					
+				</div>
+				<div class = "modal-content-middle">
+				    <div class = "modal-content-middle add-left">
+						<div class="add-row-left">
+				    		Customer Name <span class="red">*</span> <input type="text" onkeyup="checkaddform()" class= "input_bar" name = "cname" id="add-cname"/>
+						</div>
+						<div class="add-row-left">
+				    		Customer No <span class="red">*</span> <input type="text" onkeyup="checkaddform()" class= "input_bar" name = "cnum" id="add-cnum"/>
+						</div>
+						<div class="add-row-left">
+				    		Invoice No <span class="red">*</span> <input type="text" onkeyup="checkaddform()" class= "input_bar" name = "iid" id="add-iid"/>
+						</div>
+						<div class="add-row-left">
+				    		Invoice Amount <span class="red">*</span> <input type="text" onkeyup="checkaddform()" class= "input_bar" name = "amount" id="add-amount"/>
+						</div>
+					</div>
+					<div class = "modal-content-middle add-right">
+						<div class="add-row-right-top">
+				    		<!--<button type="submit" class="calendar"><img class ="ico" src = "./images/calendar_today-24px.svg" /></button>-->
+							Due Date <span class="red">*</span> <input type="date" class= "input_bar_date" onchange="checkaddform()" name = "ddate" id="add-ddate"/>
+						</div>
+						<div class="add-row-right-bottom">
+				    		Notes   <textarea class="input_bar_notes" onkeyup="checkaddform()" rows="14" cols="10" wrap="soft" name = "notes" id="add-notes"></textarea>
+						</div>
+					</div>
+				</div>
+				<div class = "modal-content-bottom">
+					<button type="button" class="inform_txt_button" id="cancel_inform">Cancel</button>
+					<button class="inform_btn" id="add_inform">Add</button>
+					<button type="button" class="inform_btn" id="clear_inform" onclick="clearaddform()">Clear</button>
+				</div>
+			</div>
+			</form>
+		</div>
+		<div id="modal2" class = "modal">
+			<div class = "modal-content-edit">
+				<div class = "modal-content-top-edit">
+					Edit Invoice<span class="close"><i class = "fas fa-times"></i></span>					
+				</div>
+				<div class = "modal-content-middle-edit">
+					<div class="edit-row-top">
+						Invoice Amount <span class="red">*</span> <input type="text" class= "input_bar" />
+					</div>
+					<div class="edit-row-bottom">
+						Notes   <textarea class="input_bar_notes" rows="14" cols="10" wrap="soft"></textarea>
+					</div>
+				</div>
+				<div class = "modal-content-bottom-edit">
+					<button class="inform_txt_button" id="cancel_inform">Cancel</button>
+					<button class="inform_btn" id="save_inform">Save</button>
+					<button class="inform_btn" id="reset_inform">Reset</button>
+				</div>
+			</div>
+		</div>
+		<div id="delmodal" class = "modal">
+			<div class = "modal-content-del">
+				<div class = "modal-content-top-del">
+					Delete Record(s)?<span class="close"><i class = "fas fa-times"></i></span>					
+				</div>
+				<div class = "modal-content-middle-del">
+					You'll lose your record(s) after this action. We can't recover them once you delete.
+					<br>
+					<br>
+					Are you sure you want to <span class="red">permanently delete</span> them?
+				</div>
+				<div class = "modal-content-bottom-del">
+					<button class="inform_btn" id="inform_delete">Delete</button>
+					<button class="inform_btn" id="cancel">Cancel</button>
+				</div>
+			</div>
+		</div>
+		<div id = "modal_type_2">
+		<div id = "noresults" class = "modal-nonhidden">
+			<img src = "./images/error_outline-24px.svg" id="notfounderrorimage"/>
+			<div>
+				<div id="modal-nonhidden-topic">
+					No results found.
+				</div>
+				<div id = "modal-nonhidden-text">
+					Try adjusting your search to find out what you are looking for.
+				</div>
+				<button type="button" id="modal-nonhidden-button">
+					Clear Search
+				</button>
+			</div>
+		</div>
+		</div>
+	</body>
+	<script>
+	document.getElementById('add_inform').disabled=true;
+	/*
+		0: input#add-cname.input_bar
+		1: input#add-cnum.input_bar
+		2: input#add-iid.input_bar
+		3: input#add-amount.input_bar
+		4: input#add-ddate.input_bar_date
+		5: textarea#add-notes.input_bar_notes
+		6: button#cancel_inform.inform_txt_button
+		7: button#add_inform.inform_btn
+		8: button#clear_inform.inform_btn
+	*/
+	function checkaddform() {
+	    var f = document.forms["addform"].elements;
+	    //console.log(f);
+	    var cansubmit = true;
+		var looptrue = true;
+	    for (var i = 0; i < 4; i++) {
+	        if (f[i].value.length == 0)
+	            looptrue = false;
+	    }
+	    if(f[4].value != '' && looptrue != false)
+	    	cansubmit = true;
+	    else
+	    	cansubmit = false;
+	    document.getElementById('add_inform').disabled = !cansubmit;
+	}
+	function clearaddform(){
+		document.getElementById('add-cname').value = "";
+		document.getElementById('add-cnum').value = "";
+		document.getElementById('add-iid').value = "";
+		document.getElementById('add-amount').value = "";
+		document.getElementById('add-ddate').value = "";
+		document.getElementById('add-notes').value = "";
+		checkaddform();
+	}
+	var bar = document.getElementsByClassName('search_box')[0];
+	var search_but = document.getElementsByClassName('search')[0];
+	var search_but_color = search_but.style.borderColor;
+	bar.onfocus = function(){
+		search_but.style.borderColor="white";
+	}
+	bar.onblur = function(){
+		search_but.style.borderColor=search_but_color;
+	}
+	</script>
+	<script src="./js/index.js"></script>
+	<script src="./js/addmodalhideshow.js"></script>
+	<script src="./js/editmodalhideshow.js"></script>
+	<script src="./js/deletemodalhideshow.js"></script>
+</html>
